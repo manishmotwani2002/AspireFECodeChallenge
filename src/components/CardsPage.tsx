@@ -55,6 +55,73 @@ export const CardsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("my-cards");
 
+  const getCardActionOptions = () => {
+    return (
+      <div className="mt-8 bg-white rounded-xl p-6 w-[500px]">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+                  {/* Freeze Card */}
+                  <button
+                    onClick={() => {
+                      const currentCard = cards.find((card, index) => 
+                        document.querySelector(`[data-carousel-item="${index}"]`)?.getAttribute('aria-selected') === 'true'
+                      );
+                      if (currentCard) {
+                        handleFreeze(currentCard.id);
+                      }
+                    }}
+                    className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
+                  >
+                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                      <span className="text-white text-xl">❄️</span>
+                    </div>
+                    <span className="text-sm text-gray-600 text-center">
+                      Freeze card
+                    </span>
+                  </button>
+
+                  {/* Set Spend Limit */}
+                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                      <span className="text-white text-xl">⚡</span>
+                    </div>
+                    <span className="text-sm text-gray-600 text-center">
+                      Set spend limit
+                    </span>
+                  </button>
+
+                  {/* Add to GPay */}
+                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                      <img src="/lovable-uploads/ea30f325-400d-4dc2-a974-fa16a762d86a.png" alt="GPay" className="w-6 h-6" />
+                    </div>
+                    <span className="text-sm text-gray-600 text-center">
+                      Add to GPay
+                    </span>
+                  </button>
+
+                  {/* Replace Card */}
+                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                      <span className="text-white text-xl">🔄</span>
+                    </div>
+                    <span className="text-sm text-gray-600 text-center">
+                      Replace card
+                    </span>
+                  </button>
+
+                  {/* Cancel Card */}
+                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                      <span className="text-white text-xl">🗑️</span>
+                    </div>
+                    <span className="text-sm text-gray-600 text-center">
+                      Cancel card
+                    </span>
+                  </button>
+                </div>
+              </div>
+    )
+  }
   const handleAddCard = (name: string) => {
     const newCard: CardType = {
       id: Date.now().toString(),
@@ -116,12 +183,14 @@ export const CardsPage = () => {
 
             <TabsContent value="my-cards" className="mt-6">
               {cards.length > 0 && (
-                <Carousel className="w-full max-w-[400px]">
+                <Carousel className="w-full w-[500px]">
                   <CarouselContent>
                     {cards.map((card) => (
+                      <div className="w-[500px]">
                       <CarouselItem key={card.id}>
                         <Card card={card} onFreeze={handleFreeze} />
                       </CarouselItem>
+                      </div>
                     ))}
                   </CarouselContent>
                   <CarouselPrevious />
@@ -129,28 +198,7 @@ export const CardsPage = () => {
                 </Carousel>
               )}
 
-              <div className="mt-8 bg-white rounded-xl p-6">
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
-                  <button
-                    onClick={() => {
-                      const currentCard = cards.find((card, index) => 
-                        document.querySelector(`[data-carousel-item="${index}"]`)?.getAttribute('aria-selected') === 'true'
-                      );
-                      if (currentCard) {
-                        handleFreeze(currentCard.id);
-                      }
-                    }}
-                    className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
-                  >
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-2">
-                      <span className="text-white text-xl">❄️</span>
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      Freeze/Unfreeze
-                    </span>
-                  </button>
-                </div>
-              </div>
+            {getCardActionOptions()}
             </TabsContent>
 
             <TabsContent value="company-cards" className="mt-6">
