@@ -17,7 +17,7 @@ export const Card = ({ card, onFreeze }: CardProps) => {
       )}
     >
       <div className="absolute top-6 right-6">
-        <img src="/lovable-uploads/bacd3306-1bc5-47c2-a058-0d0c46dd6ea3.png" alt="Aspire Logo" className="h-8" />
+        <img src="" alt="Aspire Logo" className="h-8" />
       </div>
       
       <div className="mt-8">
