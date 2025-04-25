@@ -1,0 +1,136 @@
+import { useState } from "react";
+import { Card as CardType } from "@/types/card";
+import { Card } from "./Card";
+import { Button } from "@/components/ui/button";
+import { AddCardModal } from "./AddCardModal";
+import { generateRandomCardNumber, generateRandomExpiry, generateRandomCVV } from "@/utils/cardUtils";
+import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+const initialCards: CardType[] = [
+  {
+    id: "1",
+    name: "Mark Henry",
+    number: "4111 1111 1111 1111",
+    expiryDate: "12/25",
+    cvv: "123",
+    isFrozen: false,
+  },
+  {
+    id: "2",
+    name: "John Smith",
+    number: "4532 7153 2845 9126",
+    expiryDate: "09/26",
+    cvv: "456",
+    isFrozen: false,
+  },
+  {
+    id: "3",
+    name: "Sarah Wilson",
+    number: "4916 3821 4573 9164",
+    expiryDate: "03/27",
+    cvv: "789",
+    isFrozen: false,
+  },
+  {
+    id: "4",
+    name: "Emily Brown",
+    number: "4024 0071 5336 8275",
+    expiryDate: "06/26",
+    cvv: "321",
+    isFrozen: true,
+  }
+];
+
+export const CardsPage = () => {
+  const [cards, setCards] = useState<CardType[]>(initialCards);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAddCard = (name: string) => {
+    const newCard: CardType = {
+      id: Date.now().toString(),
+      name,
+      number: generateRandomCardNumber(),
+      expiryDate: generateRandomExpiry(),
+      cvv: generateRandomCVV(),
+      isFrozen: false,
+    };
+    setCards([...cards, newCard]);
+  };
+
+  const handleFreeze = (id: string) => {
+    setCards(cards.map(card => 
+      card.id === id ? { ...card, isFrozen: !card.isFrozen } : card
+    ));
+  };
+
+  return (
+    <div className="min-h-screen p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-white">My Cards</h1>
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-aspire-green hover:bg-aspire-green/90 text-white"
+          >
+            New Card
+          </Button>
+        </div>
+
+        <div className="relative">
+          {cards.length > 0 && (
+            <Carousel className="w-full max-w-[400px] mx-auto">
+              <CarouselContent>
+                {cards.map((card) => (
+                  <CarouselItem key={card.id}>
+                    <Card card={card} onFreeze={handleFreeze} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          )}
+
+          <div className="mt-8 bg-white rounded-xl p-6">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+              <button
+                onClick={() => {
+                  const currentCard = cards.find((card, index) => 
+                    document.querySelector(`[data-carousel-item="${index}"]`)?.getAttribute('aria-selected') === 'true'
+                  );
+                  if (currentCard) {
+                    handleFreeze(currentCard.id);
+                  }
+                }}
+                className={cn(
+                  "flex flex-col items-center p-4 rounded-lg transition-colors",
+                  "hover:bg-aspire-lightBlue"
+                )}
+              >
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-2">
+                  <span className="text-white text-xl">❄️</span>
+                </div>
+                <span className="text-sm text-gray-600">
+                  Freeze/Unfreeze
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <AddCardModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddCard={handleAddCard}
+        />
+      </div>
+    </div>
+  );
+};
