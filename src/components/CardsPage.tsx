@@ -1,19 +1,19 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card as CardType } from "@/types/card";
 import { Card } from "./Card";
 import { Button } from "@/components/ui/button";
 import { AddCardModal } from "./AddCardModal";
 import { generateRandomCardNumber, generateRandomExpiry, generateRandomCVV } from "@/utils/cardUtils";
-import { Plus } from "lucide-react";
+import { Plus, CircleDot } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useEmblaCarousel from 'embla-carousel-react';
+import { cn } from "@/lib/utils";
+import { CardDetailsAccordion } from "./CardDetailsAccordion";
 
 const initialCards: CardType[] = [
   {
@@ -33,6 +33,14 @@ const initialCards: CardType[] = [
     isFrozen: false,
   },
   {
+    id: "3",
+    name: "Sarah Wilson",
+    number: "4916 3821 4573 9164",
+    expiryDate: "03/27",
+    cvv: "789",
+    isFrozen: false,
+  },
+  {
     id: "4",
     name: "Emily Brown",
     number: "4024 0071 5336 8275",
@@ -46,81 +54,9 @@ export const CardsPage = () => {
   const [cards, setCards] = useState<CardType[]>(initialCards);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("my-cards");
+  const [emblaRef, emblaApi] = useEmblaCarousel();
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  useEffect(() => {
-    const storedCards = localStorage.getItem("cards");
-    if (storedCards) {
-      setCards(JSON.parse(storedCards));
-    } 
-  }, [])
-  
-  const getCardActionOptions = () => {
-    return (
-      <div className="mt-8 bg-white rounded-xl p-6 w-[500px]">
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
-                  {/* Freeze Card */}
-                  <button
-                    onClick={() => {
-                      const currentCard = cards.find((card, index) => 
-                        document.querySelector(`[data-carousel-item="${index}"]`)?.getAttribute('aria-selected') === 'true'
-                      );
-                      if (currentCard) {
-                        handleFreeze(currentCard.id);
-                      }
-                    }}
-                    className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
-                  >
-                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
-                      <span className="text-white text-xl">❄️</span>
-                    </div>
-                    <span className="text-sm text-gray-600 text-center">
-                      Freeze card
-                    </span>
-                  </button>
-
-                  {/* Set Spend Limit */}
-                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
-                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
-                      <span className="text-white text-xl">⚡</span>
-                    </div>
-                    <span className="text-sm text-gray-600 text-center">
-                      Set spend limit
-                    </span>
-                  </button>
-
-                  {/* Add to GPay */}
-                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
-                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
-                      <img src="/lovable-uploads/ea30f325-400d-4dc2-a974-fa16a762d86a.png" alt="GPay" className="w-6 h-6" />
-                    </div>
-                    <span className="text-sm text-gray-600 text-center">
-                      Add to GPay
-                    </span>
-                  </button>
-
-                  {/* Replace Card */}
-                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
-                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
-                      <span className="text-white text-xl">🔄</span>
-                    </div>
-                    <span className="text-sm text-gray-600 text-center">
-                      Replace card
-                    </span>
-                  </button>
-
-                  {/* Cancel Card */}
-                  <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
-                    <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
-                      <span className="text-white text-xl">🗑️</span>
-                    </div>
-                    <span className="text-sm text-gray-600 text-center">
-                      Cancel card
-                    </span>
-                  </button>
-                </div>
-              </div>
-    )
-  }
   const handleAddCard = (name: string) => {
     const newCard: CardType = {
       id: Date.now().toString(),
@@ -131,8 +67,6 @@ export const CardsPage = () => {
       isFrozen: false,
     };
     setCards([...cards, newCard]);
-
-    localStorage.setItem("cards", JSON.stringify([...cards, newCard]));
   };
 
   const handleFreeze = (id: string) => {
@@ -141,9 +75,14 @@ export const CardsPage = () => {
     ));
   };
 
+  const scrollTo = (index: number) => {
+    emblaApi?.scrollTo(index);
+    setSelectedIndex(index);
+  };
+
   return (
     <div className="min-h-screen bg-white p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-8">
           {/* Header with Balance and New Card Button */}
           <div className="flex justify-between items-start">
@@ -183,23 +122,107 @@ export const CardsPage = () => {
             </TabsList>
 
             <TabsContent value="my-cards" className="mt-6">
-              {cards.length > 0 && (
-                <Carousel className="w-full w-[500px]">
-                  <CarouselContent>
-                    {cards.map((card) => (
-                      <div className="w-[500px]">
-                      <CarouselItem key={card.id}>
-                        <Card card={card} onFreeze={handleFreeze} />
-                      </CarouselItem>
-                      </div>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>
-              )}
+              <div className="flex flex-col lg:flex-row gap-8">
+                {cards.length > 0 && (
+                  <div className="space-y-4">
+                    <Carousel className="w-full max-w-[400px]" ref={emblaRef}>
+                      <CarouselContent>
+                        {cards.map((card) => (
+                          <CarouselItem key={card.id}>
+                            <Card card={card} onFreeze={handleFreeze} />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
 
-            {getCardActionOptions()}
+                    <div className="flex justify-center gap-2">
+                      {cards.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => scrollTo(index)}
+                          className="p-1"
+                        >
+                          <CircleDot 
+                            size={16}
+                            className={cn(
+                              "text-gray-300 transition-colors",
+                              selectedIndex === index && "text-aspire-green"
+                            )}
+                          />
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Card Actions */}
+                    <div className="mt-8 bg-white rounded-xl p-6">
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+                        {/* Freeze Card */}
+                        <button
+                          onClick={() => {
+                            const currentCard = cards.find((card, index) => 
+                              document.querySelector(`[data-carousel-item="${index}"]`)?.getAttribute('aria-selected') === 'true'
+                            );
+                            if (currentCard) {
+                              handleFreeze(currentCard.id);
+                            }
+                          }}
+                          className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
+                        >
+                          <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                            <span className="text-white text-xl">❄️</span>
+                          </div>
+                          <span className="text-sm text-gray-600 text-center">
+                            Freeze card
+                          </span>
+                        </button>
+
+                        {/* Set Spend Limit */}
+                        <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                          <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                            <span className="text-white text-xl">⚡</span>
+                          </div>
+                          <span className="text-sm text-gray-600 text-center">
+                            Set spend limit
+                          </span>
+                        </button>
+
+                        {/* Add to GPay */}
+                        <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                          <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                            <img src="/lovable-uploads/ea30f325-400d-4dc2-a974-fa16a762d86a.png" alt="GPay" className="w-6 h-6" />
+                          </div>
+                          <span className="text-sm text-gray-600 text-center">
+                            Add to GPay
+                          </span>
+                        </button>
+
+                        {/* Replace Card */}
+                        <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                          <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                            <span className="text-white text-xl">🔄</span>
+                          </div>
+                          <span className="text-sm text-gray-600 text-center">
+                            Replace card
+                          </span>
+                        </button>
+
+                        {/* Cancel Card */}
+                        <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
+                          <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
+                            <span className="text-white text-xl">🗑️</span>
+                          </div>
+                          <span className="text-sm text-gray-600 text-center">
+                            Cancel card
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card Details Accordion */}
+                <CardDetailsAccordion />
+              </div>
             </TabsContent>
 
             <TabsContent value="company-cards" className="mt-6">
