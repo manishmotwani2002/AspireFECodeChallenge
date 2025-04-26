@@ -131,7 +131,7 @@ export const CardsPage = () => {
                 {cards.length > 0 && (
                   <div className="space-y-4">
                     <div className="relative">
-                      <Card card={cards[currentCardIndex]} onFreeze={handleFreeze} />
+                      <Card card={cards[currentCardIndex]} />
                       
                       {/* Navigation Dots */}
                       <div className="flex justify-center items-center gap-2 mt-4">
