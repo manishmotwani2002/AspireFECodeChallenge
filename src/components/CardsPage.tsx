@@ -7,6 +7,7 @@ import { generateRandomCardNumber, generateRandomExpiry, generateRandomCVV } fro
 import { Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardDetailsAccordion } from "./CardDetailsAccordion";
+import { ChevronLeft, ChevronRight } from "lucide-react"; // Add this import
 
 const STORAGE_KEY = 'aspire-cards';
 
@@ -51,6 +52,15 @@ export const CardsPage = () => {
     return storedCards ? JSON.parse(storedCards) : initialCards;
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
+  const handleNextCard = () => {
+    setCurrentCardIndex((prev) => (prev + 1) % cards.length);
+  };
+
+  const handlePrevCard = () => {
+    setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
+  };
 
   const handleAddCard = (name: string) => {
     const newCard: CardType = {
@@ -120,9 +130,40 @@ export const CardsPage = () => {
               <div className="flex flex-col lg:flex-row gap-8">
                 {cards.length > 0 && (
                   <div className="space-y-4">
-                        {cards.map((card) => (
-                            <Card card={card} onFreeze={handleFreeze} />
-                        ))}
+                    <div className="relative">
+                      <Card card={cards[currentCardIndex]} onFreeze={handleFreeze} />
+                      
+                      {/* Navigation Dots */}
+                      <div className="flex justify-center items-center gap-2 mt-4">
+                        <button
+                          onClick={handlePrevCard}
+                          className="p-2 rounded-full bg-aspire-green/10 hover:bg-aspire-green/20"
+                          aria-label="Previous card"
+                        >
+                          <ChevronLeft className="w-6 h-6 text-aspire-green" />
+                        </button>
+                        
+                        <div className="flex gap-2">
+                          {cards.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentCardIndex(index)}
+                              className={`w-2 h-2 rounded-full transition-colors ${
+                                index === currentCardIndex ? 'bg-aspire-green' : 'bg-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        <button
+                          onClick={handleNextCard}
+                          className="p-2 rounded-full bg-aspire-green/10 hover:bg-aspire-green/20"
+                          aria-label="Next card"
+                        >
+                          <ChevronRight className="w-6 h-6 text-aspire-green" />
+                        </button>
+                      </div>
+                    </div>
 
                     {/* Card Actions */}
                     <div className="mt-8 bg-white rounded-xl p-6">
@@ -130,7 +171,7 @@ export const CardsPage = () => {
                         {/* Freeze Card */}
                         <button
                           onClick={() => {
-                            //freeze logic here
+                            handleFreeze(cards[currentCardIndex].id);
                           }}
                           className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
                         >
@@ -138,7 +179,7 @@ export const CardsPage = () => {
                             <span className="text-white text-xl">❄️</span>
                           </div>
                           <span className="text-sm text-gray-600 text-center">
-                            {true ? 'UnFreeze Card' : 'Freeze card'}
+                            {cards[currentCardIndex].isFrozen ? 'UnFreeze Card' : 'Freeze card'}
                           </span>
                         </button>
 
