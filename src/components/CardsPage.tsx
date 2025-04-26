@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card as CardType } from "@/types/card";
 import { Card } from "./Card";
 import { Button } from "@/components/ui/button";
@@ -33,14 +33,6 @@ const initialCards: CardType[] = [
     isFrozen: false,
   },
   {
-    id: "3",
-    name: "Sarah Wilson",
-    number: "4916 3821 4573 9164",
-    expiryDate: "03/27",
-    cvv: "789",
-    isFrozen: false,
-  },
-  {
     id: "4",
     name: "Emily Brown",
     number: "4024 0071 5336 8275",
@@ -55,6 +47,13 @@ export const CardsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("my-cards");
 
+  useEffect(() => {
+    const storedCards = localStorage.getItem("cards");
+    if (storedCards) {
+      setCards(JSON.parse(storedCards));
+    } 
+  }, [])
+  
   const getCardActionOptions = () => {
     return (
       <div className="mt-8 bg-white rounded-xl p-6 w-[500px]">
@@ -132,6 +131,8 @@ export const CardsPage = () => {
       isFrozen: false,
     };
     setCards([...cards, newCard]);
+
+    localStorage.setItem("cards", JSON.stringify([...cards, newCard]));
   };
 
   const handleFreeze = (id: string) => {
