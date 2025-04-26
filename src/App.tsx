@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { BottomNav } from "@/components/BottomNav";
 import Home from "./pages/Home";
 import Cards from "./pages/Cards";
 import Payments from "./pages/Payments";
@@ -22,7 +23,7 @@ const App = () => (
         
           <AppSidebar />
         
-          <div className="flex-1">
+          <div className="flex-1 pb-20 md:pb-0">
             <Toaster />
             <Sonner />
             <Routes>
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <BottomNav />
           </div>
         </BrowserRouter>
       </div>

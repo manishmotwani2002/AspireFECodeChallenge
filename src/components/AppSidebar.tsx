@@ -3,9 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, CreditCard, Settings, CreditCard as Credit, Wallet } from "lucide-react";
 import {
   Sidebar,
-  SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -24,7 +22,7 @@ export function AppSidebar() {
 
   return (
     <div className="bg-aspire-blue">
-      <Sidebar>
+      <Sidebar className="hidden md:flex">
         <div className="p-6 text-stone-50">
           <img 
             src="https://lsvp.com/wp-content/uploads/2023/03/Aspire.png"
