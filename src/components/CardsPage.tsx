@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card as CardType } from "@/types/card";
 import { Card } from "./Card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useEmblaCarousel from 'embla-carousel-react';
 import { cn } from "@/lib/utils";
 import { CardDetailsAccordion } from "./CardDetailsAccordion";
+
+const STORAGE_KEY = 'aspire-cards';
 
 const initialCards: CardType[] = [
   {
@@ -51,7 +53,10 @@ const initialCards: CardType[] = [
 ];
 
 export const CardsPage = () => {
-  const [cards, setCards] = useState<CardType[]>(initialCards);
+  const [cards, setCards] = useState<CardType[]>(() => {
+    const storedCards = localStorage.getItem(STORAGE_KEY);
+    return storedCards ? JSON.parse(storedCards) : initialCards;
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("my-cards");
   const [emblaRef, emblaApi] = useEmblaCarousel();
@@ -66,19 +71,33 @@ export const CardsPage = () => {
       cvv: generateRandomCVV(),
       isFrozen: false,
     };
-    setCards([...cards, newCard]);
+    const updatedCards = [...cards, newCard];
+    setCards(updatedCards);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCards));
   };
 
   const handleFreeze = (id: string) => {
-    setCards(cards.map(card => 
+    const updatedCards = cards.map(card => 
       card.id === id ? { ...card, isFrozen: !card.isFrozen } : card
-    ));
+    );
+    setCards(updatedCards);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCards));
   };
 
   const scrollTo = (index: number) => {
-    emblaApi?.scrollTo(index);
-    setSelectedIndex(index);
+    if (emblaApi) {
+      emblaApi.scrollTo(index);
+      setSelectedIndex(index);
+    }
   };
+
+  React.useEffect(() => {
+    if (emblaApi) {
+      emblaApi.on('select', () => {
+        setSelectedIndex(emblaApi.selectedScrollSnap());
+      });
+    }
+  }, [emblaApi]);
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8">
@@ -159,11 +178,12 @@ export const CardsPage = () => {
                         {/* Freeze Card */}
                         <button
                           onClick={() => {
-                            const currentCard = cards.find((card, index) => 
-                              document.querySelector(`[data-carousel-item="${index}"]`)?.getAttribute('aria-selected') === 'true'
-                            );
-                            if (currentCard) {
-                              handleFreeze(currentCard.id);
+                            if (emblaApi) {
+                              const currentIndex = emblaApi?.selectedScrollSnap();
+                              const currentCard = cards[currentIndex];
+                              if (currentCard) {
+                                handleFreeze(currentCard.id);
+                              }
                             }
                           }}
                           className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
@@ -172,7 +192,7 @@ export const CardsPage = () => {
                             <span className="text-white text-xl">❄️</span>
                           </div>
                           <span className="text-sm text-gray-600 text-center">
-                            Freeze card
+                            {cards[emblaApi?.selectedScrollSnap()]?.isFrozen ? 'UnFreeze Card' : 'Freeze card'}
                           </span>
                         </button>
 
