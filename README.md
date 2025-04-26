@@ -112,3 +112,13 @@ yarn dev
 ## 📱 Responsive Design
 The application is fully responsive and tested
 
+### DESKTOP UI Screenshots
+<img width="1711" alt="image" src="https://github.com/user-attachments/assets/70970e90-7e21-4e8c-9567-df34b992decd" />
+
+<img width="1688" alt="image" src="https://github.com/user-attachments/assets/8d2588c6-fe0d-48d4-b533-32f996a85d49" />
+
+
+### Mobile UI Screenshots
+<img width="359" alt="image" src="https://github.com/user-attachments/assets/00fd91c3-eda6-471d-9c14-b90a700e37e8" />
+
+<img width="356" alt="image" src="https://github.com/user-attachments/assets/01b2aaa4-6517-48af-87dc-6f0ebc316b71" />
