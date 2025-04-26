@@ -1,5 +1,4 @@
 
-import { Toaster } from "@/components/ui/toaster";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -19,9 +18,9 @@ const App = () => (
           <AppSidebar />
         
           <div className="flex-1 pb-20 md:pb-0">
-            <Toaster />
             <Routes>
-              <Route path="/" element={<Home />} />
+            <Route path="/" element={<Cards />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/cards" element={<Cards />} />
               <Route path="/payments" element={<Payments />} />
               <Route path="/credit" element={<Credit />} />

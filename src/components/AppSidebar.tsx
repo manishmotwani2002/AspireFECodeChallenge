@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const menuItems = [
-  { icon: Home, label: "Home", path: "/" },
+  { icon: Home, label: "Home", path: "/home" },
   { icon: CreditCard, label: "Cards", path: "/cards" },
   { icon: Wallet, label: "Payments", path: "/payments" },
   { icon: Credit, label: "Credit", path: "/credit" },

@@ -4,7 +4,7 @@ import { Home, CreditCard, Wallet, CreditCard as Credit, User } from "lucide-rea
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { icon: Home, label: "Home", path: "/" },
+  { icon: Home, label: "Home", path: "/home" },
   { icon: CreditCard, label: "Cards", path: "/cards" },
   { icon: Wallet, label: "Payments", path: "/payments" },
   { icon: Credit, label: "Credit", path: "/credit" },
