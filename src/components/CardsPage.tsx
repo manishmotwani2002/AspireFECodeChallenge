@@ -1,18 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card as CardType } from "@/types/card";
 import { Card } from "./Card";
 import { Button } from "@/components/ui/button";
 import { AddCardModal } from "./AddCardModal";
 import { generateRandomCardNumber, generateRandomExpiry, generateRandomCVV } from "@/utils/cardUtils";
-import { Plus, CircleDot } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+import { Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useEmblaCarousel from 'embla-carousel-react';
-import { cn } from "@/lib/utils";
 import { CardDetailsAccordion } from "./CardDetailsAccordion";
 
 const STORAGE_KEY = 'aspire-cards';
@@ -58,9 +51,6 @@ export const CardsPage = () => {
     return storedCards ? JSON.parse(storedCards) : initialCards;
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("my-cards");
-  const [emblaRef, emblaApi] = useEmblaCarousel();
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleAddCard = (name: string) => {
     const newCard: CardType = {
@@ -84,20 +74,6 @@ export const CardsPage = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCards));
   };
 
-  const scrollTo = (index: number) => {
-    if (emblaApi) {
-      emblaApi.scrollTo(index);
-      setSelectedIndex(index);
-    }
-  };
-
-  React.useEffect(() => {
-    if (emblaApi) {
-      emblaApi.on('select', () => {
-        setSelectedIndex(emblaApi.selectedScrollSnap());
-      });
-    }
-  }, [emblaApi]);
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8">
@@ -124,7 +100,7 @@ export const CardsPage = () => {
           </div>
 
           {/* Cards Sections */}
-          <Tabs defaultValue="my-cards" className="w-full" onValueChange={setActiveTab}>
+          <Tabs defaultValue="my-cards" className="w-full">
             <TabsList className="border-b w-full justify-start h-auto p-0 bg-transparent">
               <TabsTrigger 
                 value="my-cards"
@@ -144,33 +120,9 @@ export const CardsPage = () => {
               <div className="flex flex-col lg:flex-row gap-8">
                 {cards.length > 0 && (
                   <div className="space-y-4">
-                    <Carousel className="w-full max-w-[400px]" ref={emblaRef}>
-                      <CarouselContent>
                         {cards.map((card) => (
-                          <CarouselItem key={card.id}>
                             <Card card={card} onFreeze={handleFreeze} />
-                          </CarouselItem>
                         ))}
-                      </CarouselContent>
-                    </Carousel>
-
-                    <div className="flex justify-center gap-2">
-                      {cards.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => scrollTo(index)}
-                          className="p-1"
-                        >
-                          <CircleDot 
-                            size={16}
-                            className={cn(
-                              "text-gray-300 transition-colors",
-                              selectedIndex === index && "text-aspire-green"
-                            )}
-                          />
-                        </button>
-                      ))}
-                    </div>
 
                     {/* Card Actions */}
                     <div className="mt-8 bg-white rounded-xl p-6">
@@ -178,13 +130,7 @@ export const CardsPage = () => {
                         {/* Freeze Card */}
                         <button
                           onClick={() => {
-                            if (emblaApi) {
-                              const currentIndex = emblaApi?.selectedScrollSnap();
-                              const currentCard = cards[currentIndex];
-                              if (currentCard) {
-                                handleFreeze(currentCard.id);
-                              }
-                            }
+                            //freeze logic here
                           }}
                           className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue"
                         >
@@ -192,7 +138,7 @@ export const CardsPage = () => {
                             <span className="text-white text-xl">❄️</span>
                           </div>
                           <span className="text-sm text-gray-600 text-center">
-                            {cards[emblaApi?.selectedScrollSnap()]?.isFrozen ? 'UnFreeze Card' : 'Freeze card'}
+                            {true ? 'UnFreeze Card' : 'Freeze card'}
                           </span>
                         </button>
 
@@ -209,7 +155,7 @@ export const CardsPage = () => {
                         {/* Add to GPay */}
                         <button className="flex flex-col items-center p-4 rounded-lg transition-colors hover:bg-aspire-lightBlue">
                           <div className="w-12 h-12 bg-[#325BAF] rounded-full flex items-center justify-center mb-2">
-                            <img src="/lovable-uploads/ea30f325-400d-4dc2-a974-fa16a762d86a.png" alt="GPay" className="w-6 h-6" />
+                            <img src="https://i.pinimg.com/736x/68/3d/9a/683d9a1a8150ee8b29bfd25d46804605.jpg" alt="GPay" className="w-6 h-6 rounded-xl" />
                           </div>
                           <span className="text-sm text-gray-600 text-center">
                             Add to GPay

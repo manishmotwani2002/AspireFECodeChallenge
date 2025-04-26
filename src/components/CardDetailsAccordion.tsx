@@ -48,7 +48,7 @@ import {
     ];
   
     return (
-      <div className="w-full max-w-[400px] bg-white rounded-lg">
+      <div className="w-full max-w-[500px] bg-white rounded-lg">
         <Accordion type="single" collapsible className="w-full" defaultValue="recent-transactions">
           <AccordionItem value="card-details" className="border-none">
             <AccordionTrigger className="hover:no-underline p-4 bg-[#F5F9FF] rounded-lg">
